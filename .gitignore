@@ -8,6 +8,7 @@
 !/.editorconfig
 !/.eslintrc
 !/.gitignore
+!/.npmrc
 !/LICENSE
 !/package.json
 !/package-lock.json
