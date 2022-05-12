@@ -1,0 +1,29 @@
+{
+  "name": "@caviajs/http-client",
+  "description": "a micro framework for node.js",
+  "version": "1.0.0",
+  "author": "Paweł Partyka",
+  "license": "MIT",
+  "files": [
+    "dist/**/*"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "is-stream": "~2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "~16.11.7",
+    "@typescript-eslint/eslint-plugin": "~4.21.0",
+    "@typescript-eslint/parser": "~4.21.0",
+    "eslint": "~7.24.0",
+    "rimraf": "~3.0.2",
+    "ts-node": "~9.1.1",
+    "typescript": "~4.2.4"
+  }
+}

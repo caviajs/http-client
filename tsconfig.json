@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "target": "es2017",
+    "baseUrl": ".",
+    "outDir": "dist",
+    "sourceMap": true,
+    "incremental": true,
+    "lib": [
+      "es2020"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

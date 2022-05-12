@@ -1,0 +1,16 @@
+# blacklist all
+*
+!*/
+
+# include whitelist
+!/.github/**
+!/src/**
+!/.editorconfig
+!/.eslintrc
+!/.gitignore
+!/LICENSE
+!/package.json
+!/package-lock.json
+!/README.md
+!/tsconfig.build.json
+!/tsconfig.json
