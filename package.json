@@ -13,7 +13,7 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "publish": "npm run build && npm publish"
+    "publish:prod": "npm run build && npm publish"
   },
   "dependencies": {
     "is-stream": "~2.0.0"
