@@ -22,7 +22,7 @@ HttpClient
   .request({
     method: 'GET',
     responseType: 'json',
-    url: 'https://localhost:3000/api/users'
+    url: 'http://localhost:3000/api/users'
   })
   .then(response => {
     // response.body ...
