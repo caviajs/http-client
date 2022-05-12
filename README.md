@@ -20,10 +20,15 @@ import { HttpClient } from '@caviajs/http-client';
 
 HttpClient
   .request({
-    
+    method: 'GET',
+    responseType: 'json',
+    url: 'https://localhost:3000/api/users'
   })
   .then(response => {
-    // ...
+    // response.body ...
+    // response.headers ...
+    // response.statusCode ...
+    // response.statusMessage ...
   });
 ```
 
