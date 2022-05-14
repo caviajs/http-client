@@ -6,7 +6,6 @@
 !/.github/**
 !/src/**
 !/.editorconfig
-!/.eslintrc
 !/.gitignore
 !/.npmrc
 !/LICENSE
