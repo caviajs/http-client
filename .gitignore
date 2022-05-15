@@ -5,6 +5,7 @@
 # include whitelist
 !/.github/**
 !/src/**
+!/test/**
 !/.editorconfig
 !/.gitignore
 !/.npmrc
