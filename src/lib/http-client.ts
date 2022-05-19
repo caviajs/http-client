@@ -17,32 +17,15 @@ export class HttpClient {
   public static request(options: HttpOptions & { responseType?: any; }): Promise<HttpResponse>;
   public static request(options: HttpOptions): Promise<HttpResponse> {
     return new Promise<HttpResponse>((resolve, reject) => {
-      options = { ...DEFAULT_HTTP_OPTIONS, ...options };
+      options = this.getOptions(options);
 
-      const url: URL = options.url instanceof URL ? options.url : new URL(options.url);
-
-      let requestBody: any;
-
-      if (options.body === undefined) {
-        requestBody = undefined;
-      } else if (Buffer.isBuffer(options.body)) {
-        requestBody = options.body.toString();
-      } else if (isStream(options.body)) {
-        requestBody = options.body;
-      } else if (typeof options.body === 'string') {
-        requestBody = options.body.toString();
-      } else if (typeof options.body === 'object' || typeof options.body === 'number' || typeof options.body === 'object') {
-        // JSON (true, false, number, null, array, object) but without string
-        requestBody = JSON.stringify(options.body);
-      } else {
-        requestBody = (options.body as any)?.toString();
-      }
+      const requestUrl: URL = this.getRequestUrl(options);
 
       const requestOptions: https.RequestOptions = {
-        host: url.hostname,
-        port: url.port,
-        protocol: url.protocol,
-        path: `${ url.pathname }${ url.search === null ? '' : url.search }`,
+        host: requestUrl.hostname,
+        port: requestUrl.port,
+        protocol: requestUrl.protocol,
+        path: `${ requestUrl.pathname }${ requestUrl.search === null ? '' : requestUrl.search }`,
         headers: { ...options.headers },
         timeout: options.timeout,
         method: options.method.toUpperCase(),
@@ -59,12 +42,17 @@ export class HttpClient {
       if (!requestOptions.headers['Content-Type']) {
         let detectedContentType: string = null;
 
-        if (options.body === null) {
-          detectedContentType = null;
+        if (options.body === undefined) {
+          // todo
+        } else if (Buffer.isBuffer(options.body)) {
+          detectedContentType = 'application/octet-stream';
+        } else if (isStream(options.body)) {
+          detectedContentType = 'application/octet-stream';
         } else if (typeof options.body === 'string') {
           detectedContentType = 'text/plain';
-        } else if (typeof options.body === 'object' || typeof options.body === 'number' || Array.isArray(options.body)) {
-          detectedContentType = 'application/json;charset=utf-8';
+        } else if (typeof options.body === 'boolean' || typeof options.body === 'number' || typeof options.body === 'object') {
+          // JSON (true, false, number, null, array, object) but without string
+          detectedContentType = 'application/json; charset=utf-8';
         }
 
         if (detectedContentType !== null) {
@@ -72,7 +60,7 @@ export class HttpClient {
         }
       }
 
-      const request = (url.protocol === 'https:' ? https : http).request(requestOptions, (response: http.IncomingMessage) => {
+      const request = (requestUrl.protocol === 'https:' ? https : http).request(requestOptions, (response: http.IncomingMessage) => {
         if (response.headers['content-encoding'] === 'gzip') {
           response.pipe(zlib.createGunzip());
         } else if (response.headers['content-encoding'] === 'deflate') {
@@ -119,18 +107,66 @@ export class HttpClient {
         });
       });
 
+      request.on('socket', socket => {
+        if (typeof options.timeout === 'number') {
+          if (socket.connecting) {
+            // Only start the connection timer if we're actually connecting a new
+            // socket, otherwise if we're already connected (because this is a
+            // keep-alive connection) do not bother. This is important since we won't
+            // get a 'connect' event for an already connected socket.
+
+            const timeoutId = setTimeout(() => {
+              // A connect timeout occurs if the timeout is
+              // hit while Particle is attempting to establish
+              // a connection to a remote machine (the webhook destination)
+              request.abort();
+              request.emit('error', new Error('ETIMEDOUT'));
+            }, options.timeout);
+
+            socket.on('connect', () => clearTimeout(timeoutId));
+            socket.on('error', () => clearTimeout(timeoutId));
+          }
+        }
+      });
+
       request.on('error', error => {
         // all exceptions (e.g. network errors) should be treated as rejected
         // and caught by a try-catch block
         reject(error);
       });
 
-      if (requestBody) {
-        request.write(requestBody);
-      }
+      // request.on('timeout', () => {
+      //   // A read timeout occurs any time the server is too slow to send back a part of the response.
+      //   request.abort();
+      //   request.emit('error', new Error('ESOCKETTIMEDOUT'));
+      // });
 
-      request.end();
+      if (options.body === undefined) {
+        request.end();
+      } else if (Buffer.isBuffer(options.body)) {
+        request.write(options.body);
+        request.end();
+      } else if (isStream(options.body)) {
+        options.body.pipe(request);
+      } else if (typeof options.body === 'string') {
+        request.write(options.body);
+        request.end();
+      } else if (typeof options.body === 'boolean' || typeof options.body === 'number' || typeof options.body === 'object') {
+        // JSON (true, false, number, null, array, object) but without string
+        request.write(JSON.stringify(options.body));
+        request.end();
+      } else {
+        request.end();
+      }
     });
+  }
+
+  protected static getOptions(options: HttpOptions): HttpOptions {
+    return { ...DEFAULT_HTTP_OPTIONS, ...options };
+  }
+
+  protected static getRequestUrl(options: HttpOptions): URL {
+    return options.url instanceof URL ? options.url : new URL(options.url);
   }
 }
 
