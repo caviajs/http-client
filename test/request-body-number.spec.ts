@@ -22,7 +22,7 @@ it('should execute the request with the given body - number', async () => {
     .request({
       body: 1245,
       method: 'POST',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

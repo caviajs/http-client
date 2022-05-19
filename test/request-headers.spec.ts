@@ -20,7 +20,7 @@ it('should execute the request with the given headers', async () => {
         'x-bar': 'Hello Bar',
       },
       method: 'GET',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

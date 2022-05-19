@@ -14,7 +14,7 @@ it('should execute the request with the given method - DELETE', async () => {
   await HttpClient
     .request({
       method: 'DELETE',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

@@ -14,7 +14,7 @@ it('should execute the request with the given method - PUT', async () => {
   await HttpClient
     .request({
       method: 'PUT',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

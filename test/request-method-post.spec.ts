@@ -14,7 +14,7 @@ it('should execute the request with the given method - POST', async () => {
   await HttpClient
     .request({
       method: 'POST',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

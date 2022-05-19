@@ -14,7 +14,7 @@ it('should execute the request with the given method - OPTIONS', async () => {
   await HttpClient
     .request({
       method: 'OPTIONS',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

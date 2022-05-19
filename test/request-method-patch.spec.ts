@@ -14,7 +14,7 @@ it('should execute the request with the given method - PATCH', async () => {
   await HttpClient
     .request({
       method: 'PATCH',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

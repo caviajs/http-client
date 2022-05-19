@@ -23,7 +23,7 @@ it('should execute the request with the given body - stream', async () => {
     .request({
       body: Readable.from('Hello Cavia'),
       method: 'POST',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

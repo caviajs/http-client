@@ -22,7 +22,7 @@ it('should execute the request with the given body - true', async () => {
     .request({
       body: true,
       method: 'POST',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

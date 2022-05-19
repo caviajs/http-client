@@ -22,7 +22,7 @@ it('should execute the request with the given body - object', async () => {
     .request({
       body: { hello: 'cavia' },
       method: 'POST',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

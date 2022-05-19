@@ -14,7 +14,7 @@ it('should execute the request with the given method - HEAD', async () => {
   await HttpClient
     .request({
       method: 'HEAD',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 

@@ -22,7 +22,7 @@ it('should execute the request with the given body - undefined', async () => {
     .request({
       body: undefined,
       method: 'POST',
-      url: getHttpServerUrl(httpServer, '/')
+      url: getHttpServerUrl(httpServer, '/'),
     })
     .finally(() => httpServer.close());
 
