@@ -7,7 +7,6 @@ import zlib from 'zlib';
 
 const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
   responseType: 'buffer',
-  method: 'GET',
 };
 
 export class HttpClient {
@@ -21,7 +20,7 @@ export class HttpClient {
       options = {
         body: options.body,
         headers: options.headers,
-        method: options.method || DEFAULT_HTTP_OPTIONS.method,
+        method: options.method,
         responseType: options.responseType || DEFAULT_HTTP_OPTIONS.responseType,
         timeout: options.timeout,
         url: options.url,
@@ -145,7 +144,7 @@ export class HttpClient {
 export interface HttpOptions {
   body?: any;
   headers?: { [key: string]: string | number };
-  method?: 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT';
+  method: 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT';
   responseType?: 'buffer' | 'json' | 'stream' | 'text';
   timeout?: number;
   url: string | URL;
