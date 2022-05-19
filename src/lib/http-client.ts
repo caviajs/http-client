@@ -17,18 +17,11 @@ export class HttpClient {
   public static request(options: HttpOptions & { responseType?: any; }): Promise<HttpResponse>;
   public static request(options: HttpOptions): Promise<HttpResponse> {
     return new Promise<HttpResponse>((resolve, reject) => {
-      options = {
-        body: options.body,
-        headers: options.headers,
-        method: options.method,
-        responseType: options.responseType || DEFAULT_HTTP_OPTIONS.responseType,
-        timeout: options.timeout,
-        url: options.url,
-      };
+      options = { ...DEFAULT_HTTP_OPTIONS, ...options };
 
       const url: URL = options.url instanceof URL ? options.url : new URL(options.url);
 
-      let requestBody;
+      let requestBody: any;
 
       if (options.body === undefined) {
         requestBody = undefined;
@@ -42,7 +35,7 @@ export class HttpClient {
         // JSON (true, false, number, null, array, object) but without string
         requestBody = JSON.stringify(options.body);
       } else {
-        requestBody = (options.body as any).toString();
+        requestBody = (options.body as any)?.toString();
       }
 
       const requestOptions: https.RequestOptions = {
