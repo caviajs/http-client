@@ -171,7 +171,7 @@ export class HttpClient {
 }
 
 export interface HttpOptions {
-  body?: any;
+  body?: HttpBody;
   headers?: { [key: string]: string | number };
   method: 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT';
   responseType?: 'buffer' | 'json' | 'stream' | 'text';
@@ -185,3 +185,5 @@ export interface HttpResponse<T = any> {
   statusCode: number;
   statusMessage: string;
 }
+
+export type HttpBody = undefined | Buffer | Readable | string | boolean | number | null | object;
