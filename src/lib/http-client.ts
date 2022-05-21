@@ -43,7 +43,7 @@ export class HttpClient {
         let detectedContentType: string = null;
 
         if (options.body === undefined) {
-          // todo
+          detectedContentType = null;
         } else if (Buffer.isBuffer(options.body)) {
           detectedContentType = 'application/octet-stream';
         } else if (isStream(options.body)) {
