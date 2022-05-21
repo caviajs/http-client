@@ -33,5 +33,21 @@ HttpClient
 ```
 
 <div align="center">
+<h4>Request body serializing</h4>
+</div>
+
+* **buffer** - dumped into the request stream;
+  * Content-Type: **[manually specified]** | **[inferred]** | **application/octet-stream**
+  * Content-Length: **[manually specified]** | **[calc buffer length]**
+* **stream** - dumped into the request stream,
+  * Content-Type: **[manually specified]** | **application/octet-stream**
+* **string** - dumped into the request stream,
+  * Content-Type: **[manually specified]** | **text/plain**
+  * Content-Length: **[manually specified]** | **[calc string byte length]**
+* **true, false, number, null, array, object** - parsed by JSON.stringify and dumped into the request stream,
+  * Content-Type: **[manually specified]** | **application/json; charset=utf-8**
+  * Content-Length: **[manually specified]** | **[calc string byte length]**
+
+<div align="center">
   <sub>Built with ❤︎ by <a href="https://partyka.dev">Paweł Partyka</a></sub>
 </div>
