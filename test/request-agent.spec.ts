@@ -20,4 +20,6 @@ it('should use an agent if specified', async () => {
     .finally(() => httpServer.close());
 
   expect(httpRequestSpy.mock.calls[0][0]).toEqual(expect.objectContaining({ agent: agent }));
+
+  jest.clearAllMocks();
 });
