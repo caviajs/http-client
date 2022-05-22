@@ -4,108 +4,95 @@ import isStream from 'is-stream';
 import https from 'https';
 import http from 'http';
 import zlib from 'zlib';
+import { fileTypeFromBuffer } from 'file-type';
 
 const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
   responseType: 'buffer',
 };
 
 export class HttpClient {
-  public static request(options: HttpOptions & { responseType?: 'buffer'; }): Promise<HttpResponse<Buffer>>;
-  public static request<T = any>(options: HttpOptions & { responseType?: 'json'; }): Promise<HttpResponse<T>>;
-  public static request(options: HttpOptions & { responseType?: 'stream'; }): Promise<HttpResponse<Readable>>;
-  public static request(options: HttpOptions & { responseType?: 'text'; }): Promise<HttpResponse<string>>;
-  public static request(options: HttpOptions & { responseType?: any; }): Promise<HttpResponse>;
-  public static request(options: HttpOptions): Promise<HttpResponse> {
+  public static async request(options: HttpOptions & { responseType?: 'buffer'; }): Promise<HttpResponse<Buffer>>;
+  public static async request<T = any>(options: HttpOptions & { responseType?: 'json'; }): Promise<HttpResponse<T>>;
+  public static async request(options: HttpOptions & { responseType?: 'stream'; }): Promise<HttpResponse<Readable>>;
+  public static async request(options: HttpOptions & { responseType?: 'text'; }): Promise<HttpResponse<string>>;
+  public static async request(options: HttpOptions & { responseType?: any; }): Promise<HttpResponse>;
+  public static async request(options: HttpOptions): Promise<HttpResponse> {
+    options = { ...DEFAULT_HTTP_OPTIONS, ...options };
+
+    const requestOptions: https.RequestOptions = this.getRequestOptions(options);
+
+    if (!requestOptions.headers['Accept-Encoding']) {
+      requestOptions.headers['Accept-Encoding'] = 'gzip, deflate';
+    }
+
+    if (!requestOptions.headers['Accept']) {
+      requestOptions.headers['Accept'] = '*/*';
+    }
+
+    if (!requestOptions.headers['Content-Length']) {
+      const contentLength: number | undefined = this.getContentLength(options.body);
+
+      if (typeof contentLength === 'number') {
+        requestOptions.headers['Content-Length'] = contentLength;
+      }
+    }
+
+    if (!requestOptions.headers['Content-Type']) {
+      const contentType: string | undefined = await this.getContentType(options.body);
+
+      if (typeof contentType === 'string') {
+        requestOptions.headers['Content-Type'] = contentType;
+      }
+    }
+
     return new Promise<HttpResponse>((resolve, reject) => {
-      options = this.getOptions(options);
-
-      const requestUrl: URL = this.getRequestUrl(options);
-
-      const requestOptions: https.RequestOptions = {
-        host: requestUrl.hostname,
-        port: requestUrl.port,
-        protocol: requestUrl.protocol,
-        path: `${ requestUrl.pathname }${ requestUrl.search === null ? '' : requestUrl.search }`,
-        headers: { ...options.headers },
-        timeout: options.timeout,
-        method: options.method.toUpperCase(),
-      };
-
-      if (!requestOptions.headers['accept-encoding']) {
-        requestOptions.headers['accept-encoding'] = 'gzip, deflate';
-      }
-
-      if (!requestOptions.headers['Accept']) {
-        requestOptions.headers['Accept'] = 'application/json, text/plain, */*';
-      }
-
-      if (!requestOptions.headers['Content-Type']) {
-        let detectedContentType: string = null;
-
-        if (options.body === undefined) {
-          detectedContentType = null;
-        } else if (Buffer.isBuffer(options.body)) {
-          detectedContentType = 'application/octet-stream';
-        } else if (isStream(options.body)) {
-          detectedContentType = 'application/octet-stream';
-        } else if (typeof options.body === 'string') {
-          detectedContentType = 'text/plain';
-        } else if (typeof options.body === 'boolean' || typeof options.body === 'number' || typeof options.body === 'object') {
-          // JSON (true, false, number, null, array, object) but without string
-          detectedContentType = 'application/json; charset=utf-8';
-        }
-
-        if (detectedContentType !== null) {
-          requestOptions.headers['Content-Type'] = detectedContentType;
-        }
-      }
-
-      const request = (requestUrl.protocol === 'https:' ? https : http).request(requestOptions, (response: http.IncomingMessage) => {
-        if (response.headers['content-encoding'] === 'gzip') {
-          response.pipe(zlib.createGunzip());
-        } else if (response.headers['content-encoding'] === 'deflate') {
-          response.pipe(zlib.createInflate());
-        }
-
-        if (options.responseType === 'stream') {
-          return resolve({
-            body: response,
-            headers: response.headers,
-            statusCode: response.statusCode,
-            statusMessage: response.statusMessage,
-          });
-        }
-
-        let data: Buffer = Buffer.alloc(0);
-
-        response.on('data', (chunk: Buffer) => {
-          data = Buffer.concat([data, chunk]);
-        });
-
-        response.on('end', () => {
-          let responseBody: any;
-
-          switch (options.responseType) {
-            case 'buffer':
-              responseBody = data;
-              break;
-            case 'json':
-              responseBody = JSON.parse(data.toString());
-              break;
-            case 'text':
-              responseBody = data.toString();
-              break;
+      const request = (requestOptions.protocol === 'https:' ? https : http)
+        .request(requestOptions, (response: http.IncomingMessage) => {
+          if (response.headers['content-encoding'] === 'gzip') {
+            response.pipe(zlib.createGunzip());
+          } else if (response.headers['content-encoding'] === 'deflate') {
+            response.pipe(zlib.createInflate());
           }
 
-          // all http statuses should be treated as resolved (1xx-5xx)
-          resolve({
-            body: responseBody,
-            headers: response.headers,
-            statusCode: response.statusCode,
-            statusMessage: response.statusMessage,
+          if (options.responseType === 'stream') {
+            return resolve({
+              body: response,
+              headers: response.headers,
+              statusCode: response.statusCode,
+              statusMessage: response.statusMessage,
+            });
+          }
+
+          let data: Buffer = Buffer.alloc(0);
+
+          response.on('data', (chunk: Buffer) => {
+            data = Buffer.concat([data, chunk]);
+          });
+
+          response.on('end', () => {
+            let responseBody: any;
+
+            switch (options.responseType) {
+              case 'buffer':
+                responseBody = data;
+                break;
+              case 'json':
+                responseBody = JSON.parse(data.toString());
+                break;
+              case 'text':
+                responseBody = data.toString();
+                break;
+            }
+
+            // all http statuses should be treated as resolved (1xx-5xx)
+            resolve({
+              body: responseBody,
+              headers: response.headers,
+              statusCode: response.statusCode,
+              statusMessage: response.statusMessage,
+            });
           });
         });
-      });
 
       request.on('socket', socket => {
         if (typeof options.timeout === 'number') {
@@ -161,12 +148,53 @@ export class HttpClient {
     });
   }
 
-  protected static getOptions(options: HttpOptions): HttpOptions {
-    return { ...DEFAULT_HTTP_OPTIONS, ...options };
+  protected static getContentLength(body: HttpBody): number | undefined {
+    if (body === undefined) {
+      return undefined;
+    } else if (Buffer.isBuffer(body)) {
+      return body.length;
+    } else if (isStream(body)) {
+      return undefined;
+    } else if (typeof body === 'string') {
+      return Buffer.byteLength(body);
+    } else if (typeof body === 'boolean' || typeof body === 'number' || typeof body === 'object') {
+      // JSON (true, false, number, null, array, object) but without string
+      return Buffer.byteLength(JSON.stringify(body));
+    } else {
+      return undefined;
+    }
   }
 
-  protected static getRequestUrl(options: HttpOptions): URL {
-    return options.url instanceof URL ? options.url : new URL(options.url);
+  protected static async getContentType(body: HttpBody): Promise<string | undefined> {
+    if (body === undefined) {
+      return undefined;
+    } else if (Buffer.isBuffer(body)) {
+      // const fileTypeResult = await fileTypeFromBuffer(requestBody);
+      // detectedContentType = fileTypeResult?.mime || 'application/octet-stream';
+
+      return 'application/octet-stream';
+    } else if (isStream(body)) {
+      return 'application/octet-stream';
+    } else if (typeof body === 'string') {
+      return 'text/plain';
+    } else if (typeof body === 'boolean' || typeof body === 'number' || typeof body === 'object') {
+      // JSON (true, false, number, null, array, object) but without string
+      return 'application/json; charset=utf-8';
+    }
+  }
+
+  protected static getRequestOptions(options: HttpOptions): https.RequestOptions {
+    const requestUrl: URL = options.url instanceof URL ? options.url : new URL(options.url);
+
+    return {
+      host: requestUrl.hostname,
+      port: requestUrl.port,
+      protocol: requestUrl.protocol,
+      path: `${ requestUrl.pathname }${ requestUrl.search === null ? '' : requestUrl.search }`,
+      headers: { ...options.headers },
+      timeout: options.timeout,
+      method: options.method.toUpperCase(),
+    };
   }
 }
 
