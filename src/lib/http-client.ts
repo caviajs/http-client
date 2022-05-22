@@ -125,11 +125,11 @@ export class HttpClient {
         reject(error);
       });
 
-      // request.on('timeout', () => {
-      //   // A read timeout occurs any time the server is too slow to send back a part of the response.
-      //   request.abort();
-      //   request.emit('error', new Error('ESOCKETTIMEDOUT'));
-      // });
+      request.on('timeout', () => {
+        // A read timeout occurs any time the server is too slow to send back a part of the response.
+        request.abort();
+        request.emit('error', new Error('ESOCKETTIMEDOUT'));
+      });
 
       if (options.body === undefined) {
         request.end();
