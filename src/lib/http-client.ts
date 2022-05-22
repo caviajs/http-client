@@ -76,7 +76,11 @@ export class HttpClient {
                 responseBody = data;
                 break;
               case 'json':
-                responseBody = JSON.parse(data.toString());
+                try {
+                  responseBody = JSON.parse(data.toString());
+                } catch (error) {
+                  return reject(error);
+                }
                 break;
               case 'text':
                 responseBody = data.toString();

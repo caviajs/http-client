@@ -2,9 +2,9 @@ import http from 'http';
 import { HttpClient } from '../src';
 import { getHttpServerUrl } from './_utils/get-http-server-url';
 
-it('should throw an error for invalid json', async () => {
+it('should throw an error when trying to parse invalid json', async () => {
   const httpServer: http.Server = http.createServer((request, response) => {
-    response.end('Invalid JSON');
+    response.end(undefined);
   });
 
   try {
@@ -16,6 +16,6 @@ it('should throw an error for invalid json', async () => {
       })
       .finally(() => httpServer.close());
   } catch (error) {
-    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe('Unexpected end of JSON input');
   }
 });
