@@ -101,19 +101,17 @@ export class HttpClient {
         if (typeof options.timeout === 'number') {
           const configureReadTimeout = () => {
             request.on('timeout', () => {
-              // Read timeout occurs when the server is too slow to send back a part of the response.
+              // read timeout occurs when the server is too slow to send back a part of the response
               request.abort();
               request.emit('error', new Error('ESOCKETTIMEDOUT'));
             });
           };
 
           if (socket.connecting) {
-            // Only start the connection timer if we are actually connecting a new socket,
-            // otherwise if we're already connected (because this is a keep-alive connection) do not bother.
-
+            // only start the connection timer if we are actually connecting a new socket
             const timeoutId = setTimeout(
               () => {
-                // Connection timeout occurs when a timeout occurs while trying to connect to a remote machine.
+                // connect timeout occurs when a timeout occurs while trying to connect to a remote machine
                 request.abort();
                 request.emit('error', new Error('ETIMEDOUT'));
               },
@@ -122,7 +120,7 @@ export class HttpClient {
 
             socket.on('connect', () => {
               clearTimeout(timeoutId);
-              // After establishing the connection, configure the read timeout
+              // after establishing the connection, configure the read timeout
               configureReadTimeout();
             });
 
@@ -130,15 +128,14 @@ export class HttpClient {
               clearTimeout(timeoutId);
             });
           } else {
-            // already connected
+            // configure the read timeout for an already connected socket
             configureReadTimeout();
           }
         }
       });
 
       request.on('error', error => {
-        // all exceptions (e.g. network errors) should be treated as rejected
-        // and caught by a try-catch block
+        // all exceptions (e.g. network errors) should be treated as rejected and caught by a try-catch block
         reject(error);
       });
 
