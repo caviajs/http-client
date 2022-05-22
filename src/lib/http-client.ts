@@ -1,9 +1,9 @@
-import { Readable } from 'stream';
-import { URL } from 'url';
-import isStream from 'is-stream';
-import https from 'https';
-import http from 'http';
 import zlib from 'zlib';
+import http from 'http';
+import https from 'https';
+import { URL } from 'url';
+import { Readable } from 'stream';
+import isStream from 'is-stream';
 
 const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
   responseType: 'buffer',
@@ -99,22 +99,39 @@ export class HttpClient {
 
       request.on('socket', socket => {
         if (typeof options.timeout === 'number') {
-          if (socket.connecting) {
-            // Only start the connection timer if we're actually connecting a new
-            // socket, otherwise if we're already connected (because this is a
-            // keep-alive connection) do not bother. This is important since we won't
-            // get a 'connect' event for an already connected socket.
-
-            const timeoutId = setTimeout(() => {
-              // A connect timeout occurs if the timeout is
-              // hit while Particle is attempting to establish
-              // a connection to a remote machine (the webhook destination)
+          const configureReadTimeout = () => {
+            request.on('timeout', () => {
+              // Read timeout occurs when the server is too slow to send back a part of the response.
               request.abort();
-              request.emit('error', new Error('ETIMEDOUT'));
-            }, options.timeout);
+              request.emit('error', new Error('ESOCKETTIMEDOUT'));
+            });
+          };
 
-            socket.on('connect', () => clearTimeout(timeoutId));
-            socket.on('error', () => clearTimeout(timeoutId));
+          if (socket.connecting) {
+            // Only start the connection timer if we are actually connecting a new socket,
+            // otherwise if we're already connected (because this is a keep-alive connection) do not bother.
+
+            const timeoutId = setTimeout(
+              () => {
+                // Connection timeout occurs when a timeout occurs while trying to connect to a remote machine.
+                request.abort();
+                request.emit('error', new Error('ETIMEDOUT'));
+              },
+              options.timeout,
+            );
+
+            socket.on('connect', () => {
+              clearTimeout(timeoutId);
+              // After establishing the connection, configure the read timeout
+              configureReadTimeout();
+            });
+
+            socket.on('error', () => {
+              clearTimeout(timeoutId);
+            });
+          } else {
+            // already connected
+            configureReadTimeout();
           }
         }
       });
@@ -123,12 +140,6 @@ export class HttpClient {
         // all exceptions (e.g. network errors) should be treated as rejected
         // and caught by a try-catch block
         reject(error);
-      });
-
-      request.on('timeout', () => {
-        // A read timeout occurs any time the server is too slow to send back a part of the response.
-        request.abort();
-        request.emit('error', new Error('ESOCKETTIMEDOUT'));
       });
 
       if (options.body === undefined) {
@@ -187,6 +198,7 @@ export class HttpClient {
     const requestUrl: URL = options.url instanceof URL ? options.url : new URL(options.url);
 
     return {
+      agent: options.agent,
       host: requestUrl.hostname,
       port: requestUrl.port,
       protocol: requestUrl.protocol,
@@ -199,6 +211,7 @@ export class HttpClient {
 }
 
 export interface HttpOptions {
+  agent?: http.Agent | https.Agent;
   body?: HttpBody;
   headers?: { [key: string]: string | number };
   method: 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT';
