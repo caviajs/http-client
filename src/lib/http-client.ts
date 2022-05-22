@@ -4,7 +4,6 @@ import isStream from 'is-stream';
 import https from 'https';
 import http from 'http';
 import zlib from 'zlib';
-import { fileTypeFromBuffer } from 'file-type';
 
 const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
   responseType: 'buffer',
@@ -169,9 +168,6 @@ export class HttpClient {
     if (body === undefined) {
       return undefined;
     } else if (Buffer.isBuffer(body)) {
-      // const fileTypeResult = await fileTypeFromBuffer(requestBody);
-      // detectedContentType = fileTypeResult?.mime || 'application/octet-stream';
-
       return 'application/octet-stream';
     } else if (isStream(body)) {
       return 'application/octet-stream';

@@ -37,7 +37,7 @@ HttpClient
 </div>
 
 * **buffer** - dumped into the request stream;
-  * Content-Type: **[manually specified]** | **[inferred]** | **application/octet-stream**
+  * Content-Type: **[manually specified]** | **application/octet-stream**
   * Content-Length: **[manually specified]** | **[calc buffer length]**
 * **stream** - dumped into the request stream,
   * Content-Type: **[manually specified]** | **application/octet-stream**
