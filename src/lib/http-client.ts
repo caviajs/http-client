@@ -21,27 +21,27 @@ export class HttpClient {
 
       const requestOptions: https.RequestOptions = this.getRequestOptions(options);
 
-      if (!requestOptions.headers['Accept-Encoding']) {
-        requestOptions.headers['Accept-Encoding'] = 'gzip, deflate';
+      if (!requestOptions.headers['accept-encoding']) {
+        requestOptions.headers['accept-encoding'] = 'gzip, deflate';
       }
 
-      if (!requestOptions.headers['Accept']) {
-        requestOptions.headers['Accept'] = '*/*';
+      if (!requestOptions.headers['accept']) {
+        requestOptions.headers['accept'] = '*/*';
       }
 
-      if (!requestOptions.headers['Content-Length']) {
+      if (!requestOptions.headers['content-length']) {
         const contentLength: number | undefined = this.getContentLength(options.body);
 
         if (typeof contentLength === 'number') {
-          requestOptions.headers['Content-Length'] = contentLength;
+          requestOptions.headers['content-length'] = contentLength;
         }
       }
 
-      if (!requestOptions.headers['Content-Type']) {
+      if (!requestOptions.headers['content-type']) {
         const contentType: string | undefined = this.getContentType(options.body);
 
         if (typeof contentType === 'string') {
-          requestOptions.headers['Content-Type'] = contentType;
+          requestOptions.headers['content-type'] = contentType;
         }
       }
 
@@ -200,7 +200,9 @@ export class HttpClient {
       port: requestUrl.port,
       protocol: requestUrl.protocol,
       path: `${ requestUrl.pathname }${ requestUrl.search === null ? '' : requestUrl.search }`,
-      headers: { ...options.headers },
+      headers: Object
+        .entries(options.headers || {})
+        .reduce((prev, [key, value]) => ({ ...prev, [key.toLowerCase()]: value }), {}),
       timeout: options.timeout,
       method: options.method.toUpperCase(),
     };
