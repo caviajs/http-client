@@ -16,35 +16,35 @@ export class HttpClient {
   public static async request(options: HttpOptions & { responseType?: 'text'; }): Promise<HttpResponse<string>>;
   public static async request(options: HttpOptions & { responseType?: any; }): Promise<HttpResponse>;
   public static async request(options: HttpOptions): Promise<HttpResponse> {
-    options = { ...DEFAULT_HTTP_OPTIONS, ...options };
-
-    const requestOptions: https.RequestOptions = this.getRequestOptions(options);
-
-    if (!requestOptions.headers['Accept-Encoding']) {
-      requestOptions.headers['Accept-Encoding'] = 'gzip, deflate';
-    }
-
-    if (!requestOptions.headers['Accept']) {
-      requestOptions.headers['Accept'] = '*/*';
-    }
-
-    if (!requestOptions.headers['Content-Length']) {
-      const contentLength: number | undefined = this.getContentLength(options.body);
-
-      if (typeof contentLength === 'number') {
-        requestOptions.headers['Content-Length'] = contentLength;
-      }
-    }
-
-    if (!requestOptions.headers['Content-Type']) {
-      const contentType: string | undefined = await this.getContentType(options.body);
-
-      if (typeof contentType === 'string') {
-        requestOptions.headers['Content-Type'] = contentType;
-      }
-    }
-
     return new Promise<HttpResponse>((resolve, reject) => {
+      options = { ...DEFAULT_HTTP_OPTIONS, ...options };
+
+      const requestOptions: https.RequestOptions = this.getRequestOptions(options);
+
+      if (!requestOptions.headers['Accept-Encoding']) {
+        requestOptions.headers['Accept-Encoding'] = 'gzip, deflate';
+      }
+
+      if (!requestOptions.headers['Accept']) {
+        requestOptions.headers['Accept'] = '*/*';
+      }
+
+      if (!requestOptions.headers['Content-Length']) {
+        const contentLength: number | undefined = this.getContentLength(options.body);
+
+        if (typeof contentLength === 'number') {
+          requestOptions.headers['Content-Length'] = contentLength;
+        }
+      }
+
+      if (!requestOptions.headers['Content-Type']) {
+        const contentType: string | undefined = this.getContentType(options.body);
+
+        if (typeof contentType === 'string') {
+          requestOptions.headers['Content-Type'] = contentType;
+        }
+      }
+
       const request = (requestOptions.protocol === 'https:' ? https : http)
         .request(requestOptions, (response: http.IncomingMessage) => {
           if (response.headers['content-encoding'] === 'gzip') {
@@ -179,7 +179,7 @@ export class HttpClient {
     }
   }
 
-  protected static async getContentType(body: HttpBody): Promise<string | undefined> {
+  protected static getContentType(body: HttpBody): string | undefined {
     if (body === undefined) {
       return undefined;
     } else if (Buffer.isBuffer(body)) {
