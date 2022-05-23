@@ -16,15 +16,17 @@ npm install @caviajs/http-client --save
 </div>
 
 ```typescript
-import { HttpClient } from '@caviajs/http-client';
+import { HttpClient, HttpOptions, HttpResponse } from '@caviajs/http-client';
+
+const options: HttpOptions = {
+  method: 'GET',
+  responseType: 'buffer',
+  url: 'http://localhost:3000/api/users'
+};
 
 HttpClient
-  .request({
-    method: 'GET',
-    responseType: 'json',
-    url: 'http://localhost:3000/api/users'
-  })
-  .then(response => {
+  .request(options)
+  .then((response: HttpResponse) => {
     // response.body ...
     // response.headers ...
     // response.statusCode ...
@@ -33,20 +35,27 @@ HttpClient
 ```
 
 <div align="center">
-<h4>Request body serializing</h4>
+<h4>Request body serialization</h4>
 </div>
 
-* **buffer** - dumped into the request stream;
-  * Content-Type: **[manually specified]** | **application/octet-stream**
-  * Content-Length: **[manually specified]** | **[calc buffer length]**
-* **stream** - dumped into the request stream,
-  * Content-Type: **[manually specified]** | **application/octet-stream**
-* **string** - dumped into the request stream,
-  * Content-Type: **[manually specified]** | **text/plain**
-  * Content-Length: **[manually specified]** | **[calc string byte length]**
-* **true, false, number, null, array, object** - parsed by JSON.stringify and dumped into the request stream,
-  * Content-Type: **[manually specified]** | **application/json; charset=utf-8**
-  * Content-Length: **[manually specified]** | **[calc string byte length]**
+* `buffer` - dumped into the request stream;
+  * `Content-Length`: **[manually specified]** || **[calc buffer length]**
+  * `Content-Type`: **[manually specified]** || **application/octet-stream**
+* `stream` - dumped into the request stream,
+  * `Content-Type`: **[manually specified]** || **application/octet-stream**
+* `string` - dumped into the request stream,
+  * `Content-Length`: **[manually specified]** || **[calc string byte length]**
+  * `Content-Type`: **[manually specified]** || **text/plain**
+* `true`, `false`, `number`, `null`, `array`, `object` - parsed by JSON.stringify and dumped into the request stream,
+  * `Content-Length`: **[manually specified]** || **[calc string byte length]**
+  * `Content-Type`: **[manually specified]** || **application/json; charset=utf-8**
+  
+<div align="center">
+<h4>Response body decompression</h4>
+</div>
+
+If the `Content-Encoding` header is specified then HttpClient starts decompression. 
+Supported decompression: `gzip` and `deflate`.
 
 <div align="center">
   <sub>Built with ❤︎ by <a href="https://partyka.dev">Paweł Partyka</a></sub>
