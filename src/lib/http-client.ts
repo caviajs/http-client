@@ -2,7 +2,7 @@ import zlib from 'zlib';
 import http from 'http';
 import https from 'https';
 import { URL } from 'url';
-import { Readable } from 'stream';
+import { Readable, Stream } from 'stream';
 import isStream from 'is-stream';
 
 const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
@@ -47,15 +47,23 @@ export class HttpClient {
 
       const request = (requestOptions.protocol === 'https:' ? https : http)
         .request(requestOptions, (response: http.IncomingMessage) => {
-          if (response.headers['content-encoding'] === 'gzip') {
-            response.pipe(zlib.createGunzip());
-          } else if (response.headers['content-encoding'] === 'deflate') {
-            response.pipe(zlib.createInflate());
+          let stream: Stream;
+
+          switch (response.headers['content-encoding']?.toLowerCase()) {
+            case 'gzip':
+              stream = response.pipe(zlib.createGunzip());
+              break;
+            case 'deflate':
+              stream = response.pipe(zlib.createInflate());
+              break;
+            default:
+              stream = response;
+              break;
           }
 
           if (options.responseType === 'stream') {
             return resolve({
-              body: response,
+              body: stream,
               headers: response.headers,
               statusCode: response.statusCode,
               statusMessage: response.statusMessage,
@@ -64,11 +72,11 @@ export class HttpClient {
 
           let data: Buffer = Buffer.alloc(0);
 
-          response.on('data', (chunk: Buffer) => {
+          stream.on('data', (chunk: Buffer) => {
             data = Buffer.concat([data, chunk]);
           });
 
-          response.on('end', () => {
+          stream.on('end', () => {
             let responseBody: any;
 
             switch (options.responseType) {
