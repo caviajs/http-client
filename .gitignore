@@ -4,8 +4,10 @@
 
 # include whitelist
 !/.github/**
+!/.husky/**
 !/src/**
 !/test/**
+!/.commitlintrc.json
 !/.editorconfig
 !/.gitignore
 !/.npmrc
