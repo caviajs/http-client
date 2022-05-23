@@ -21,15 +21,15 @@ export class HttpClient {
 
       const requestOptions: https.RequestOptions = this.getRequestOptions(options);
 
-      if (!requestOptions.headers['accept-encoding']) {
+      if (typeof requestOptions.headers['accept-encoding'] === 'undefined') {
         requestOptions.headers['accept-encoding'] = 'gzip, deflate';
       }
 
-      if (!requestOptions.headers['accept']) {
+      if (typeof requestOptions.headers['accept'] === 'undefined') {
         requestOptions.headers['accept'] = '*/*';
       }
 
-      if (!requestOptions.headers['content-length']) {
+      if (typeof requestOptions.headers['content-length'] === 'undefined') {
         const contentLength: number | undefined = this.getContentLength(options.body);
 
         if (typeof contentLength === 'number') {
@@ -37,7 +37,7 @@ export class HttpClient {
         }
       }
 
-      if (!requestOptions.headers['content-type']) {
+      if (typeof requestOptions.headers['content-type'] === 'undefined') {
         const contentType: string | undefined = this.getContentType(options.body);
 
         if (typeof contentType === 'string') {
