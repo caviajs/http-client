@@ -11,9 +11,7 @@ const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
 
 export class HttpClient {
   public static async request(options: HttpOptions & { responseType?: 'buffer'; }): Promise<HttpResponse<Buffer>>;
-  public static async request<T = any>(options: HttpOptions & { responseType?: 'json'; }): Promise<HttpResponse<T>>;
   public static async request(options: HttpOptions & { responseType?: 'stream'; }): Promise<HttpResponse<Readable>>;
-  public static async request(options: HttpOptions & { responseType?: 'text'; }): Promise<HttpResponse<string>>;
   public static async request(options: HttpOptions & { responseType?: any; }): Promise<HttpResponse>;
   public static async request(options: HttpOptions): Promise<HttpResponse> {
     return new Promise<HttpResponse>((resolve, reject) => {
@@ -70,34 +68,16 @@ export class HttpClient {
             });
           }
 
-          let data: Buffer = Buffer.alloc(0);
+          let buffer: Buffer = Buffer.alloc(0);
 
           stream.on('data', (chunk: Buffer) => {
-            data = Buffer.concat([data, chunk]);
+            buffer = Buffer.concat([buffer, chunk]);
           });
 
           stream.on('end', () => {
-            let responseBody: any;
-
-            switch (options.responseType) {
-              case 'buffer':
-                responseBody = data;
-                break;
-              case 'json':
-                try {
-                  responseBody = JSON.parse(data.toString());
-                } catch (error) {
-                  return reject(error);
-                }
-                break;
-              case 'text':
-                responseBody = data.toString();
-                break;
-            }
-
             // all http statuses should be treated as resolved (1xx-5xx)
             resolve({
-              body: responseBody,
+              body: buffer,
               headers: response.headers,
               statusCode: response.statusCode,
               statusMessage: response.statusMessage,
@@ -222,7 +202,7 @@ export interface HttpOptions {
   body?: HttpBody;
   headers?: { [key: string]: string | number };
   method: 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT';
-  responseType?: 'buffer' | 'json' | 'stream' | 'text';
+  responseType?: 'buffer' | 'stream';
   timeout?: number;
   url: string | URL;
 }
