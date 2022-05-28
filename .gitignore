@@ -10,7 +10,6 @@
 !/.commitlintrc.json
 !/.editorconfig
 !/.gitignore
-!/.npmrc
 !/LICENSE
 !/package.json
 !/package-lock.json
