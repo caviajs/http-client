@@ -1,8 +1,10 @@
 name: Quality
 
 on:
-  pull_request:
   push:
+    branches:
+      - master
+  pull_request:
     branches:
       - master
 
@@ -14,8 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run test
+      - run: npm run build
