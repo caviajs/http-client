@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "author": "Paweł Partyka",
   "license": "MIT",
+  "repository": "caviajs/http-client",
   "files": [
     "dist/**/*"
   ],
