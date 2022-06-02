@@ -3,7 +3,6 @@ import http from 'http';
 import https from 'https';
 import { URL } from 'url';
 import { Readable, Stream } from 'stream';
-import isStream from 'is-stream';
 
 const DEFAULT_HTTP_OPTIONS: Partial<HttpOptions> = {
   responseType: 'buffer',
@@ -132,7 +131,7 @@ export class HttpClient {
       } else if (Buffer.isBuffer(options.body)) {
         request.write(options.body);
         request.end();
-      } else if (isStream(options.body)) {
+      } else if (options.body instanceof Readable) {
         options.body.pipe(request);
       } else if (typeof options.body === 'string') {
         request.write(options.body);
@@ -152,7 +151,7 @@ export class HttpClient {
       return undefined;
     } else if (Buffer.isBuffer(body)) {
       return body.length;
-    } else if (isStream(body)) {
+    } else if (body instanceof Readable) {
       return undefined;
     } else if (typeof body === 'string') {
       return Buffer.byteLength(body);
@@ -169,7 +168,7 @@ export class HttpClient {
       return undefined;
     } else if (Buffer.isBuffer(body)) {
       return 'application/octet-stream';
-    } else if (isStream(body)) {
+    } else if (body instanceof Readable) {
       return 'application/octet-stream';
     } else if (typeof body === 'string') {
       return 'text/plain';
