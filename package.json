@@ -13,6 +13,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:debug": "node --inspect-brk -r ts-node/register jest --runInBand",
@@ -25,6 +27,9 @@
     "@commitlint/config-conventional": "~17.0.2",
     "@types/jest": "~27.4.1",
     "@types/node": "~18.0.0",
+    "@typescript-eslint/eslint-plugin": "~5.29.0",
+    "@typescript-eslint/parser": "~5.29.0",
+    "eslint": "~8.18.0",
     "husky": "~8.0.1",
     "jest": "~27.5.1",
     "rimraf": "~3.0.2",

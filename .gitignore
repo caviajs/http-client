@@ -9,6 +9,7 @@
 !/test/**
 !/.commitlintrc.json
 !/.editorconfig
+!/.eslintrc
 !/.gitignore
 !/LICENSE
 !/package.json
