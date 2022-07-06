@@ -7,28 +7,6 @@
 
 This package includes an HttpClient with which you can make HTTP requests.
 
-### Request body serialization
-
-The request body that we pass will be automatically serialized in accordance with the specification below.
-
-* `buffer` - dumped into the request stream;
-  * `Content-Length`: **[manually specified]** || **[calc buffer length]**
-  * `Content-Type`: **[manually specified]** || **application/octet-stream**
-* `stream` - dumped into the request stream,
-  * `Content-Type`: **[manually specified]** || **application/octet-stream**
-* `string` - dumped into the request stream,
-  * `Content-Length`: **[manually specified]** || **[calc string byte length]**
-  * `Content-Type`: **[manually specified]** || **text/plain**
-* `true`, `false`, `number`, `null`, `array`, `object` - parsed by JSON.stringify and dumped into the request stream,
-  * `Content-Length`: **[manually specified]** || **[calc string byte length]**
-  * `Content-Type`: **[manually specified]** || **application/json; charset=utf-8**
-
-### Response body decompression
-
-If the `Content-Encoding` header is specified then HttpClient will decompress the response. 
-
-Supported decompression: `gzip` and `deflate`.
-
 ## Usage
 
 ### Installation
@@ -66,6 +44,28 @@ HttpClient
     // only exceptions of the kind, e.g. network errors, are treated as thrown
   });
 ```
+
+## Request body serialization
+
+The request body that we pass will be automatically serialized in accordance with the specification below.
+
+* `buffer` - dumped into the request stream;
+  * `Content-Length`: **[manually specified]** || **[calc buffer length]**
+  * `Content-Type`: **[manually specified]** || **application/octet-stream**
+* `stream` - dumped into the request stream,
+  * `Content-Type`: **[manually specified]** || **application/octet-stream**
+* `string` - dumped into the request stream,
+  * `Content-Length`: **[manually specified]** || **[calc string byte length]**
+  * `Content-Type`: **[manually specified]** || **text/plain**
+* `true`, `false`, `number`, `null`, `array`, `object` - parsed by JSON.stringify and dumped into the request stream,
+  * `Content-Length`: **[manually specified]** || **[calc string byte length]**
+  * `Content-Type`: **[manually specified]** || **application/json; charset=utf-8**
+
+## Response body decompression
+
+If the `Content-Encoding` header is specified then HttpClient will decompress the response.
+
+Supported decompression: `gzip` and `deflate`.
 
 <div align="center">
   <sub>Built with ❤︎ by <a href="https://partyka.dev">Paweł Partyka</a></sub>
