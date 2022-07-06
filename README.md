@@ -5,7 +5,7 @@
 
 ## Introduction
 
-This package includes an HttpClient with which you can make HTTP requests.
+This package includes an `HttpClient` with which you can make HTTP requests.
 
 ## Usage
 
@@ -63,7 +63,7 @@ The request body that we pass will be automatically serialized in accordance wit
 
 ## Response body decompression
 
-If the `Content-Encoding` header is specified then HttpClient will decompress the response.
+If the `Content-Encoding` header is specified then `HttpClient` will decompress the response.
 
 Supported decompression: `gzip` and `deflate`.
 
