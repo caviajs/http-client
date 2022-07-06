@@ -15,7 +15,7 @@ This package includes an `HttpClient` with which you can make HTTP requests.
 npm install @caviajs/http-client --save
 ```
 
-### Making a requests
+### Make an HTTP request
 
 ```typescript
 import { HttpClient, HttpResponse } from '@caviajs/http-client';
