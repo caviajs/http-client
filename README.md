@@ -66,7 +66,3 @@ The request body that we pass will be automatically serialized in accordance wit
 If the `Content-Encoding` header is specified then `HttpClient` will decompress the response.
 
 Supported decompression: `gzip` and `deflate`.
-
-<div align="center">
-  <sub>Built with ❤︎ by <a href="https://partyka.dev">Paweł Partyka</a></sub>
-</div>
