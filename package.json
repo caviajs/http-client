@@ -5,7 +5,7 @@
   "author": "Paweł Partyka",
   "license": "MIT",
   "homepage": "https://caviajs.com",
-  "repository": "caviajs/http",
+  "repository": "caviajs/http-client",
   "files": [
     "dist/**/*"
   ],
