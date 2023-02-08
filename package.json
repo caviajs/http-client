@@ -23,22 +23,22 @@
   },
   "devDependencies": {
     "@commitlint/cli": "~17.1.2",
-    "@commitlint/config-conventional": "~17.1.0",
+    "@commitlint/config-conventional": "~17.4.2",
     "@release-it/conventional-changelog": "~4.3.0",
     "@types/jest": "~27.4.1",
     "@types/node": "~18.7.23",
     "@types/supertest": "~2.0.12",
-    "@typescript-eslint/eslint-plugin": "~5.38.1",
+    "@typescript-eslint/eslint-plugin": "~5.51.0",
     "@typescript-eslint/parser": "~5.38.1",
     "eslint": "~8.24.0",
-    "husky": "~8.0.1",
+    "husky": "~8.0.3",
     "jest": "~27.5.1",
     "release-it": "~14.12.1",
-    "rimraf": "~3.0.2",
+    "rimraf": "~4.1.2",
     "supertest": "~6.2.4",
     "ts-jest": "~27.1.4",
     "ts-node": "~10.9.1",
-    "typescript": "~4.8.4"
+    "typescript": "~4.9.5"
   },
   "jest": {
     "coverageDirectory": "coverage",
