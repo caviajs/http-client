@@ -30,7 +30,7 @@
     "@types/supertest": "~2.0.12",
     "@typescript-eslint/eslint-plugin": "~5.51.0",
     "@typescript-eslint/parser": "~5.38.1",
-    "eslint": "~8.24.0",
+    "eslint": "~8.33.0",
     "husky": "~8.0.3",
     "jest": "~27.5.1",
     "release-it": "~14.12.1",
