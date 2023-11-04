@@ -24,7 +24,7 @@
   "devDependencies": {
     "@commitlint/cli": "~17.4.2",
     "@commitlint/config-conventional": "~17.4.2",
-    "@release-it/conventional-changelog": "~5.1.1",
+    "@release-it/conventional-changelog": "~6.0.0",
     "@types/jest": "~27.4.1",
     "@types/node": "~18.13.0",
     "@types/supertest": "~2.0.12",
