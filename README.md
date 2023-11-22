@@ -1,6 +1,6 @@
 <div align="center">
 <h3>@caviajs/http-client</h3>
-<p>ecosystem for your guinea pig</p>
+<p>a micro framework for node.js</p>
 </div>
 
 ## Introduction

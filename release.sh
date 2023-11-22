@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=$(release-it --release-version --npm.skipChecks)
+VERSION=$(npx release-it --release-version --npm.skipChecks)
 
 npm version "$VERSION" --no-git-tag-version
 npm run build
