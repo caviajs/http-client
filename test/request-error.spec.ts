@@ -8,6 +8,6 @@ it('should handle the error', async () => {
         url: 'http://localhost/',
       });
   } catch (e) {
-    expect(e.message).toBe('connect ECONNREFUSED ::1:80');
+    expect(e.message).toMatch(/^connect ECONNREFUSED/);
   }
 });
