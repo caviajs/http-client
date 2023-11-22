@@ -1,7 +1,7 @@
 {
   "name": "@caviajs/http-client",
   "description": "a micro framework for node.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Paweł Partyka",
   "license": "MIT",
   "repository": "caviajs/http-client",
